@@ -1,0 +1,21 @@
+2026-05-14 16:36:55,784 [INFO] main: === run start | input=chunks.jsonl output=output/qa_test_dryrun.xlsx top_k=3 limit=5 dry_run=True ===
+2026-05-14 16:36:55,784 [INFO] main: log file: C:\Users\HUAWEI\Documents\WorkSpaces\rag\qa_generate_v2\logs\run_chunks.dryrun_20260514_163655.log
+2026-05-14 16:36:55,784 [INFO] qa_generator.chunk_loader: loaded 49 chunks from chunks.jsonl
+2026-05-14 16:36:55,784 [INFO] main: limited to first 5 chunks
+2026-05-14 16:36:55,979 [INFO] qa_generator.embedder: vector index: total=5 already_indexed=5 to_embed=0
+2026-05-14 16:36:55,979 [INFO] main: indexing done: {'total': 5, 'embedded': 0, 'skipped': 5}
+2026-05-14 16:36:55,980 [INFO] qa_generator.progress: loaded progress: done=4 skipped=1 (file=C:\Users\HUAWEI\Documents\WorkSpaces\rag\qa_generate_v2\progress\chunks.dryrun.progress.json)
+2026-05-14 16:36:55,981 [INFO] qa_generator.progress: loaded failed: 0 entries
+2026-05-14 16:36:56,119 [INFO] main: dry-run: cleared progress + intermediate qa.jsonl
+2026-05-14 16:36:56,119 [INFO] main: to process: 5 / 5
+2026-05-14 16:37:00,415 [INFO] main: [chunk_0001] neighbors=['chunk_0003', 'chunk_0005', 'chunk_0004']
+2026-05-14 16:37:01,907 [INFO] main: [chunk_0001] skipped (empty qa) in 5.74s
+2026-05-14 16:37:03,036 [INFO] main: [chunk_0002] neighbors=['chunk_0004', 'chunk_0003', 'chunk_0005']
+2026-05-14 16:37:06,081 [INFO] main: [chunk_0002] generated 1 qa in 4.17s
+2026-05-14 16:37:06,856 [INFO] main: [chunk_0003] neighbors=['chunk_0005', 'chunk_0004', 'chunk_0001']
+2026-05-14 16:37:15,911 [INFO] main: [chunk_0003] generated 3 qa in 9.81s
+2026-05-14 16:37:16,691 [INFO] main: [chunk_0004] neighbors=['chunk_0005', 'chunk_0003', 'chunk_0002']
+2026-05-14 16:37:20,600 [INFO] main: [chunk_0004] generated 1 qa in 4.66s
+2026-05-14 16:37:21,659 [INFO] main: [chunk_0005] neighbors=['chunk_0003', 'chunk_0004', 'chunk_0001']
+2026-05-14 16:37:27,366 [INFO] main: [chunk_0005] generated 1 qa in 6.77s
+2026-05-14 16:37:27,366 [INFO] main: === run summary: {'done': 4, 'skipped_empty': 1, 'failed': 0} qa_pairs_total=6 ===

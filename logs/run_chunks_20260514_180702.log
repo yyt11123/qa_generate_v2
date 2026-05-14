@@ -1,0 +1,129 @@
+2026-05-14 18:07:02,779 [INFO] main: === run start | input=chunks.jsonl output=output/qa_test_full.xlsx top_k=3 limit=0 dry_run=False ===
+2026-05-14 18:07:02,779 [INFO] main: log file: C:\Users\HUAWEI\Documents\WorkSpaces\rag\qa_generate_v2\logs\run_chunks_20260514_180702.log
+2026-05-14 18:07:02,781 [INFO] qa_generator.chunk_loader: loaded 49 chunks from chunks.jsonl
+2026-05-14 18:07:02,882 [INFO] qa_generator.embedder: vector index: total=49 already_indexed=5 to_embed=44
+2026-05-14 18:07:07,079 [INFO] qa_generator.embedder: embedded batch of 10 (running total 10)
+2026-05-14 18:07:08,980 [INFO] qa_generator.embedder: embedded batch of 10 (running total 20)
+2026-05-14 18:07:11,351 [INFO] qa_generator.embedder: embedded batch of 10 (running total 30)
+2026-05-14 18:07:13,682 [INFO] qa_generator.embedder: embedded batch of 10 (running total 40)
+2026-05-14 18:07:15,011 [INFO] qa_generator.embedder: embedded batch of 4 (running total 44)
+2026-05-14 18:07:15,011 [INFO] main: indexing done: {'total': 49, 'embedded': 44, 'skipped': 5}
+2026-05-14 18:07:15,011 [INFO] main: to process: 49 / 49
+2026-05-14 18:07:15,772 [INFO] main: [chunk_0001] neighbors=['chunk_0022', 'chunk_0010', 'chunk_0016']
+2026-05-14 18:07:16,925 [INFO] main: [chunk_0001] skipped (empty qa) in 1.90s
+2026-05-14 18:07:17,654 [INFO] main: [chunk_0002] neighbors=['chunk_0004', 'chunk_0003', 'chunk_0005']
+2026-05-14 18:07:20,735 [INFO] main: [chunk_0002] generated 1 qa in 3.80s
+2026-05-14 18:07:21,708 [INFO] main: [chunk_0003] neighbors=['chunk_0006', 'chunk_0010', 'chunk_0016']
+2026-05-14 18:07:30,294 [INFO] main: [chunk_0003] generated 3 qa in 9.55s
+2026-05-14 18:07:31,003 [INFO] main: [chunk_0004] neighbors=['chunk_0005', 'chunk_0003', 'chunk_0041']
+2026-05-14 18:07:34,731 [INFO] main: [chunk_0004] generated 1 qa in 4.43s
+2026-05-14 18:07:35,728 [INFO] main: [chunk_0005] neighbors=['chunk_0006', 'chunk_0003', 'chunk_0004']
+2026-05-14 18:07:42,164 [INFO] main: [chunk_0005] generated 1 qa in 7.43s
+2026-05-14 18:07:43,849 [INFO] main: [chunk_0006] neighbors=['chunk_0003', 'chunk_0010', 'chunk_0005']
+2026-05-14 18:08:04,186 [INFO] main: [chunk_0006] generated 3 qa in 22.01s
+2026-05-14 18:08:05,720 [INFO] main: [chunk_0007] neighbors=['chunk_0008', 'chunk_0010', 'chunk_0009']
+2026-05-14 18:08:13,263 [INFO] main: [chunk_0007] generated 2 qa in 9.07s
+2026-05-14 18:08:14,705 [INFO] main: [chunk_0008] neighbors=['chunk_0010', 'chunk_0007', 'chunk_0009']
+2026-05-14 18:08:18,841 [INFO] main: [chunk_0008] generated 1 qa in 5.57s
+2026-05-14 18:08:20,824 [INFO] main: [chunk_0009] neighbors=['chunk_0010', 'chunk_0008', 'chunk_0007']
+2026-05-14 18:08:24,104 [INFO] main: [chunk_0009] generated 1 qa in 5.26s
+2026-05-14 18:08:25,362 [INFO] main: [chunk_0010] neighbors=['chunk_0009', 'chunk_0008', 'chunk_0007']
+2026-05-14 18:08:39,533 [INFO] main: [chunk_0010] generated 3 qa in 15.42s
+2026-05-14 18:08:40,653 [INFO] main: [chunk_0011] neighbors=['chunk_0010', 'chunk_0006', 'chunk_0003']
+2026-05-14 18:08:49,555 [INFO] main: [chunk_0011] generated 3 qa in 9.99s
+2026-05-14 18:08:50,958 [INFO] main: [chunk_0012] neighbors=['chunk_0013', 'chunk_0015', 'chunk_0022']
+2026-05-14 18:08:56,943 [INFO] main: [chunk_0012] generated 2 qa in 7.38s
+2026-05-14 18:08:58,206 [INFO] main: [chunk_0013] neighbors=['chunk_0018', 'chunk_0015', 'chunk_0014']
+2026-05-14 18:09:10,979 [INFO] main: [chunk_0013] generated 3 qa in 14.01s
+2026-05-14 18:09:12,112 [INFO] main: [chunk_0014] neighbors=['chunk_0013', 'chunk_0015', 'chunk_0018']
+2026-05-14 18:09:20,211 [INFO] main: [chunk_0014] generated 3 qa in 9.22s
+2026-05-14 18:09:21,448 [INFO] main: [chunk_0015] neighbors=['chunk_0013', 'chunk_0022', 'chunk_0014']
+2026-05-14 18:09:35,804 [INFO] main: [chunk_0015] generated 3 qa in 15.57s
+2026-05-14 18:09:37,557 [INFO] main: [chunk_0016] neighbors=['chunk_0017', 'chunk_0013', 'chunk_0018']
+2026-05-14 18:09:41,941 [INFO] main: [chunk_0016] generated 1 qa in 6.12s
+2026-05-14 18:09:43,258 [INFO] main: [chunk_0017] neighbors=['chunk_0016', 'chunk_0013', 'chunk_0015']
+2026-05-14 18:09:49,985 [INFO] main: [chunk_0017] generated 2 qa in 8.03s
+2026-05-14 18:09:51,219 [INFO] main: [chunk_0018] neighbors=['chunk_0013', 'chunk_0016', 'chunk_0014']
+2026-05-14 18:10:06,525 [INFO] main: [chunk_0018] generated 3 qa in 16.53s
+2026-05-14 18:10:07,706 [INFO] main: [chunk_0019] neighbors=['chunk_0020', 'chunk_0021', 'chunk_0013']
+2026-05-14 18:10:27,886 [INFO] main: [chunk_0019] generated 3 qa in 21.35s
+2026-05-14 18:10:28,955 [INFO] main: [chunk_0020] neighbors=['chunk_0019', 'chunk_0021', 'chunk_0010']
+2026-05-14 18:10:32,957 [INFO] main: [chunk_0020] generated 1 qa in 5.07s
+2026-05-14 18:10:35,908 [INFO] main: [chunk_0021] neighbors=['chunk_0019', 'chunk_0001', 'chunk_0020']
+2026-05-14 18:10:50,910 [INFO] main: [chunk_0021] generated 3 qa in 17.94s
+2026-05-14 18:10:52,622 [INFO] main: [chunk_0022] neighbors=['chunk_0024', 'chunk_0010', 'chunk_0001']
+2026-05-14 18:11:05,511 [WARNING] qa_generator.qa_extractor: [chunk_0022] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:05,511 [WARNING] qa_generator.qa_extractor: [chunk_0022] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:05,511 [WARNING] qa_generator.qa_extractor: [chunk_0022] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:05,518 [INFO] main: [chunk_0022] generated 3 qa in 14.60s
+2026-05-14 18:11:06,595 [INFO] main: [chunk_0023] neighbors=['chunk_0024', 'chunk_0026', 'chunk_0022']
+2026-05-14 18:11:08,160 [INFO] main: [chunk_0023] skipped (empty qa) in 2.63s
+2026-05-14 18:11:09,185 [INFO] main: [chunk_0024] neighbors=['chunk_0025', 'chunk_0026', 'chunk_0022']
+2026-05-14 18:11:32,250 [WARNING] qa_generator.qa_extractor: [chunk_0024] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:32,251 [WARNING] qa_generator.qa_extractor: [chunk_0024] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:32,251 [WARNING] qa_generator.qa_extractor: [chunk_0024] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:32,275 [INFO] main: [chunk_0024] generated 3 qa in 24.09s
+2026-05-14 18:11:33,324 [INFO] main: [chunk_0025] neighbors=['chunk_0024', 'chunk_0026', 'chunk_0023']
+2026-05-14 18:11:41,986 [WARNING] qa_generator.qa_extractor: [chunk_0025] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:41,986 [WARNING] qa_generator.qa_extractor: [chunk_0025] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:41,986 [WARNING] qa_generator.qa_extractor: [chunk_0025] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:41,996 [INFO] main: [chunk_0025] generated 3 qa in 9.71s
+2026-05-14 18:11:43,009 [INFO] main: [chunk_0026] neighbors=['chunk_0024', 'chunk_0022', 'chunk_0025']
+2026-05-14 18:11:57,957 [WARNING] qa_generator.qa_extractor: [chunk_0026] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:57,957 [WARNING] qa_generator.qa_extractor: [chunk_0026] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:57,957 [WARNING] qa_generator.qa_extractor: [chunk_0026] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:11:57,969 [INFO] main: [chunk_0026] generated 3 qa in 15.96s
+2026-05-14 18:11:59,000 [INFO] main: [chunk_0027] neighbors=['chunk_0031', 'chunk_0029', 'chunk_0032']
+2026-05-14 18:12:12,157 [INFO] main: [chunk_0027] generated 2 qa in 14.18s
+2026-05-14 18:12:13,202 [INFO] main: [chunk_0028] neighbors=['chunk_0032', 'chunk_0033', 'chunk_0029']
+2026-05-14 18:12:32,161 [INFO] main: [chunk_0028] generated 2 qa in 19.99s
+2026-05-14 18:12:33,195 [INFO] main: [chunk_0029] neighbors=['chunk_0027', 'chunk_0028', 'chunk_0032']
+2026-05-14 18:12:42,711 [INFO] main: [chunk_0029] generated 2 qa in 10.54s
+2026-05-14 18:12:43,839 [INFO] main: [chunk_0030] neighbors=['chunk_0031', 'chunk_0027', 'chunk_0032']
+2026-05-14 18:12:54,908 [INFO] main: [chunk_0030] generated 2 qa in 12.18s
+2026-05-14 18:12:55,926 [INFO] main: [chunk_0031] neighbors=['chunk_0032', 'chunk_0030', 'chunk_0027']
+2026-05-14 18:13:12,188 [INFO] main: [chunk_0031] generated 3 qa in 17.27s
+2026-05-14 18:13:13,216 [INFO] main: [chunk_0032] neighbors=['chunk_0033', 'chunk_0031', 'chunk_0028']
+2026-05-14 18:13:57,018 [INFO] main: [chunk_0032] generated 3 qa in 44.81s
+2026-05-14 18:13:58,006 [INFO] main: [chunk_0033] neighbors=['chunk_0032', 'chunk_0028', 'chunk_0031']
+2026-05-14 18:14:09,302 [INFO] main: [chunk_0033] generated 2 qa in 12.27s
+2026-05-14 18:14:10,463 [INFO] main: [chunk_0034] neighbors=['chunk_0035', 'chunk_0037', 'chunk_0010']
+2026-05-14 18:14:24,394 [INFO] main: [chunk_0034] generated 1 qa in 15.08s
+2026-05-14 18:14:25,429 [INFO] main: [chunk_0035] neighbors=['chunk_0034', 'chunk_0037', 'chunk_0010']
+2026-05-14 18:14:37,966 [INFO] main: [chunk_0035] generated 2 qa in 13.56s
+2026-05-14 18:14:38,946 [INFO] main: [chunk_0036] neighbors=['chunk_0022', 'chunk_0001', 'chunk_0038']
+2026-05-14 18:14:48,657 [INFO] main: [chunk_0036] generated 1 qa in 10.68s
+2026-05-14 18:14:49,645 [INFO] main: [chunk_0037] neighbors=['chunk_0022', 'chunk_0006', 'chunk_0010']
+2026-05-14 18:14:56,762 [WARNING] qa_generator.qa_extractor: [chunk_0037] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:14:56,762 [WARNING] qa_generator.qa_extractor: [chunk_0037] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:14:56,768 [INFO] main: [chunk_0037] generated 2 qa in 8.11s
+2026-05-14 18:14:57,792 [INFO] main: [chunk_0038] neighbors=['chunk_0006', 'chunk_0001', 'chunk_0036']
+2026-05-14 18:15:14,628 [WARNING] qa_generator.qa_extractor: [chunk_0038] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:15:14,628 [WARNING] qa_generator.qa_extractor: [chunk_0038] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:15:14,628 [WARNING] qa_generator.qa_extractor: [chunk_0038] invalid category '財務核保', falling back to '一般查询'
+2026-05-14 18:15:14,762 [INFO] main: [chunk_0038] generated 3 qa in 17.86s
+2026-05-14 18:15:15,758 [INFO] main: [chunk_0039] neighbors=['chunk_0040', 'chunk_0022', 'chunk_0001']
+2026-05-14 18:15:26,689 [INFO] main: [chunk_0039] generated 2 qa in 11.92s
+2026-05-14 18:15:29,580 [INFO] main: [chunk_0040] neighbors=['chunk_0039', 'chunk_0018', 'chunk_0016']
+2026-05-14 18:15:39,109 [INFO] main: [chunk_0040] generated 2 qa in 12.41s
+2026-05-14 18:15:41,643 [INFO] main: [chunk_0041] neighbors=['chunk_0004', 'chunk_0005', 'chunk_0016']
+2026-05-14 18:15:51,286 [INFO] main: [chunk_0041] generated 3 qa in 12.17s
+2026-05-14 18:15:52,440 [INFO] main: [chunk_0042] neighbors=['chunk_0043', 'chunk_0045', 'chunk_0044']
+2026-05-14 18:16:05,053 [INFO] main: [chunk_0042] generated 3 qa in 13.76s
+2026-05-14 18:16:06,762 [INFO] main: [chunk_0043] neighbors=['chunk_0044', 'chunk_0046', 'chunk_0045']
+2026-05-14 18:16:17,943 [INFO] main: [chunk_0043] generated 3 qa in 12.88s
+2026-05-14 18:16:19,075 [INFO] main: [chunk_0044] neighbors=['chunk_0043', 'chunk_0046', 'chunk_0045']
+2026-05-14 18:16:32,955 [INFO] main: [chunk_0044] generated 3 qa in 14.92s
+2026-05-14 18:16:35,102 [INFO] main: [chunk_0045] neighbors=['chunk_0044', 'chunk_0043', 'chunk_0046']
+2026-05-14 18:16:45,992 [INFO] main: [chunk_0045] generated 3 qa in 13.03s
+2026-05-14 18:16:47,058 [INFO] main: [chunk_0046] neighbors=['chunk_0043', 'chunk_0044', 'chunk_0045']
+2026-05-14 18:17:04,318 [INFO] main: [chunk_0046] generated 3 qa in 18.32s
+2026-05-14 18:17:05,375 [INFO] main: [chunk_0047] neighbors=['chunk_0043', 'chunk_0045', 'chunk_0044']
+2026-05-14 18:17:19,557 [INFO] main: [chunk_0047] generated 3 qa in 15.23s
+2026-05-14 18:17:20,589 [INFO] main: [chunk_0048] neighbors=['chunk_0044', 'chunk_0043', 'chunk_0047']
+2026-05-14 18:17:29,623 [INFO] main: [chunk_0048] generated 2 qa in 10.06s
+2026-05-14 18:17:30,659 [INFO] main: [chunk_0049] neighbors=['chunk_0042', 'chunk_0022', 'chunk_0031']
+2026-05-14 18:17:39,599 [INFO] main: [chunk_0049] generated 3 qa in 9.96s
+2026-05-14 18:17:39,601 [INFO] main: === run summary: {'done': 47, 'skipped_empty': 2, 'failed': 0} qa_pairs_total=110 ===
+2026-05-14 18:17:41,448 [INFO] qa_generator.exporter: wrote 110 rows to output\qa_test_full.xlsx
+2026-05-14 18:17:41,448 [INFO] main: xlsx exported: output/qa_test_full.xlsx (110 rows)
