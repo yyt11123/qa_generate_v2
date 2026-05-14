@@ -1,0 +1,107 @@
+2026-05-14 18:49:34,523 [INFO] main: === run start | input=chunks.jsonl output=output/qa_test_full_v2.xlsx top_k=3 limit=0 dry_run=False ===
+2026-05-14 18:49:34,523 [INFO] main: log file: C:\Users\HUAWEI\Documents\WorkSpaces\rag\qa_generate_v2\logs\run_chunks_20260514_184934.log
+2026-05-14 18:49:34,523 [INFO] qa_generator.chunk_loader: loaded 49 chunks from chunks.jsonl
+2026-05-14 18:49:34,649 [INFO] qa_generator.embedder: vector index: total=49 already_indexed=49 to_embed=0
+2026-05-14 18:49:34,649 [INFO] main: indexing done: {'total': 49, 'embedded': 0, 'skipped': 49}
+2026-05-14 18:49:34,649 [INFO] main: to process: 49 / 49
+2026-05-14 18:49:38,001 [INFO] main: [chunk_0001] neighbors=['chunk_0022', 'chunk_0010', 'chunk_0016']
+2026-05-14 18:49:39,589 [INFO] main: [chunk_0001] skipped (empty qa) in 4.93s
+2026-05-14 18:49:40,401 [INFO] main: [chunk_0002] neighbors=['chunk_0004', 'chunk_0003', 'chunk_0005']
+2026-05-14 18:49:43,590 [INFO] main: [chunk_0002] generated 1 qa in 3.90s
+2026-05-14 18:49:44,556 [INFO] main: [chunk_0003] neighbors=['chunk_0006', 'chunk_0010', 'chunk_0016']
+2026-05-14 18:49:53,128 [INFO] main: [chunk_0003] generated 3 qa in 9.52s
+2026-05-14 18:49:53,876 [INFO] main: [chunk_0004] neighbors=['chunk_0005', 'chunk_0003', 'chunk_0041']
+2026-05-14 18:49:57,752 [INFO] main: [chunk_0004] generated 1 qa in 4.61s
+2026-05-14 18:49:58,495 [INFO] main: [chunk_0005] neighbors=['chunk_0006', 'chunk_0003', 'chunk_0004']
+2026-05-14 18:50:04,418 [INFO] main: [chunk_0005] generated 1 qa in 6.65s
+2026-05-14 18:50:05,453 [INFO] main: [chunk_0006] neighbors=['chunk_0003', 'chunk_0010', 'chunk_0005']
+2026-05-14 18:50:25,325 [INFO] main: [chunk_0006] generated 3 qa in 20.86s
+2026-05-14 18:50:26,334 [INFO] main: [chunk_0007] neighbors=['chunk_0008', 'chunk_0010', 'chunk_0009']
+2026-05-14 18:50:33,347 [INFO] main: [chunk_0007] generated 2 qa in 8.02s
+2026-05-14 18:50:34,921 [INFO] main: [chunk_0008] neighbors=['chunk_0010', 'chunk_0007', 'chunk_0009']
+2026-05-14 18:50:39,650 [INFO] main: [chunk_0008] generated 1 qa in 6.28s
+2026-05-14 18:50:40,424 [INFO] main: [chunk_0009] neighbors=['chunk_0010', 'chunk_0008', 'chunk_0007']
+2026-05-14 18:50:43,892 [INFO] main: [chunk_0009] generated 1 qa in 4.24s
+2026-05-14 18:50:44,676 [INFO] main: [chunk_0010] neighbors=['chunk_0009', 'chunk_0008', 'chunk_0007']
+2026-05-14 18:50:56,008 [INFO] main: [chunk_0010] generated 2 qa in 12.10s
+2026-05-14 18:50:56,753 [INFO] main: [chunk_0011] neighbors=['chunk_0010', 'chunk_0006', 'chunk_0003']
+2026-05-14 18:51:05,802 [INFO] main: [chunk_0011] generated 3 qa in 9.79s
+2026-05-14 18:51:06,585 [INFO] main: [chunk_0012] neighbors=['chunk_0013', 'chunk_0015', 'chunk_0022']
+2026-05-14 18:51:11,811 [INFO] main: [chunk_0012] generated 2 qa in 6.00s
+2026-05-14 18:51:12,611 [INFO] main: [chunk_0013] neighbors=['chunk_0018', 'chunk_0015', 'chunk_0014']
+2026-05-14 18:51:26,329 [INFO] main: [chunk_0013] generated 3 qa in 14.51s
+2026-05-14 18:51:28,234 [INFO] main: [chunk_0014] neighbors=['chunk_0013', 'chunk_0015', 'chunk_0018']
+2026-05-14 18:51:37,717 [INFO] main: [chunk_0014] generated 3 qa in 11.37s
+2026-05-14 18:51:39,294 [INFO] main: [chunk_0015] neighbors=['chunk_0013', 'chunk_0022', 'chunk_0014']
+2026-05-14 18:51:49,276 [INFO] main: [chunk_0015] generated 3 qa in 11.55s
+2026-05-14 18:51:52,854 [INFO] main: [chunk_0016] neighbors=['chunk_0017', 'chunk_0013', 'chunk_0018']
+2026-05-14 18:51:59,434 [INFO] main: [chunk_0016] generated 1 qa in 10.15s
+2026-05-14 18:52:01,323 [INFO] main: [chunk_0017] neighbors=['chunk_0016', 'chunk_0013', 'chunk_0015']
+2026-05-14 18:52:08,112 [INFO] main: [chunk_0017] generated 2 qa in 8.67s
+2026-05-14 18:52:09,185 [INFO] main: [chunk_0018] neighbors=['chunk_0013', 'chunk_0016', 'chunk_0014']
+2026-05-14 18:52:23,538 [INFO] main: [chunk_0018] generated 3 qa in 15.42s
+2026-05-14 18:52:24,310 [INFO] main: [chunk_0019] neighbors=['chunk_0020', 'chunk_0021', 'chunk_0013']
+2026-05-14 18:52:38,994 [INFO] main: [chunk_0019] generated 3 qa in 15.45s
+2026-05-14 18:52:39,966 [INFO] main: [chunk_0020] neighbors=['chunk_0019', 'chunk_0021', 'chunk_0010']
+2026-05-14 18:52:45,490 [INFO] main: [chunk_0020] generated 1 qa in 6.49s
+2026-05-14 18:52:46,346 [INFO] main: [chunk_0021] neighbors=['chunk_0019', 'chunk_0001', 'chunk_0020']
+2026-05-14 18:53:04,269 [INFO] main: [chunk_0021] generated 3 qa in 18.72s
+2026-05-14 18:53:05,483 [INFO] main: [chunk_0022] neighbors=['chunk_0024', 'chunk_0010', 'chunk_0001']
+2026-05-14 18:53:18,267 [INFO] main: [chunk_0022] generated 3 qa in 13.98s
+2026-05-14 18:53:19,279 [INFO] main: [chunk_0023] neighbors=['chunk_0024', 'chunk_0026', 'chunk_0022']
+2026-05-14 18:53:20,701 [INFO] main: [chunk_0023] skipped (empty qa) in 2.34s
+2026-05-14 18:53:22,123 [INFO] main: [chunk_0024] neighbors=['chunk_0025', 'chunk_0026', 'chunk_0022']
+2026-05-14 18:53:36,669 [INFO] main: [chunk_0024] generated 3 qa in 15.94s
+2026-05-14 18:53:37,453 [INFO] main: [chunk_0025] neighbors=['chunk_0024', 'chunk_0026', 'chunk_0023']
+2026-05-14 18:53:46,827 [INFO] main: [chunk_0025] generated 3 qa in 10.15s
+2026-05-14 18:53:47,560 [INFO] main: [chunk_0026] neighbors=['chunk_0024', 'chunk_0022', 'chunk_0025']
+2026-05-14 18:54:03,020 [INFO] main: [chunk_0026] generated 3 qa in 16.19s
+2026-05-14 18:54:04,022 [INFO] main: [chunk_0027] neighbors=['chunk_0031', 'chunk_0029', 'chunk_0032']
+2026-05-14 18:54:18,143 [INFO] main: [chunk_0027] generated 2 qa in 15.11s
+2026-05-14 18:54:18,927 [INFO] main: [chunk_0028] neighbors=['chunk_0032', 'chunk_0033', 'chunk_0029']
+2026-05-14 18:54:35,255 [INFO] main: [chunk_0028] generated 3 qa in 17.11s
+2026-05-14 18:54:36,883 [INFO] main: [chunk_0029] neighbors=['chunk_0027', 'chunk_0028', 'chunk_0032']
+2026-05-14 18:54:45,872 [INFO] main: [chunk_0029] generated 2 qa in 10.60s
+2026-05-14 18:54:46,664 [INFO] main: [chunk_0030] neighbors=['chunk_0031', 'chunk_0027', 'chunk_0032']
+2026-05-14 18:54:57,279 [INFO] main: [chunk_0030] generated 2 qa in 11.40s
+2026-05-14 18:54:58,582 [INFO] main: [chunk_0031] neighbors=['chunk_0032', 'chunk_0030', 'chunk_0027']
+2026-05-14 18:55:26,767 [INFO] main: [chunk_0031] generated 3 qa in 29.48s
+2026-05-14 18:55:29,045 [INFO] main: [chunk_0032] neighbors=['chunk_0033', 'chunk_0031', 'chunk_0028']
+2026-05-14 18:55:41,827 [INFO] main: [chunk_0032] generated 3 qa in 15.06s
+2026-05-14 18:55:42,634 [INFO] main: [chunk_0033] neighbors=['chunk_0032', 'chunk_0028', 'chunk_0031']
+2026-05-14 18:55:55,350 [INFO] main: [chunk_0033] generated 2 qa in 13.51s
+2026-05-14 18:55:56,167 [INFO] main: [chunk_0034] neighbors=['chunk_0035', 'chunk_0037', 'chunk_0010']
+2026-05-14 18:56:10,105 [INFO] main: [chunk_0034] generated 1 qa in 14.75s
+2026-05-14 18:56:11,111 [INFO] main: [chunk_0035] neighbors=['chunk_0034', 'chunk_0037', 'chunk_0010']
+2026-05-14 18:56:23,664 [INFO] main: [chunk_0035] generated 2 qa in 13.55s
+2026-05-14 18:56:24,429 [INFO] main: [chunk_0036] neighbors=['chunk_0022', 'chunk_0001', 'chunk_0038']
+2026-05-14 18:56:34,358 [INFO] main: [chunk_0036] generated 1 qa in 10.68s
+2026-05-14 18:56:35,143 [INFO] main: [chunk_0037] neighbors=['chunk_0022', 'chunk_0006', 'chunk_0010']
+2026-05-14 18:56:42,651 [INFO] main: [chunk_0037] generated 2 qa in 8.28s
+2026-05-14 18:56:43,559 [INFO] main: [chunk_0038] neighbors=['chunk_0006', 'chunk_0001', 'chunk_0036']
+2026-05-14 18:57:02,279 [INFO] main: [chunk_0038] generated 3 qa in 19.62s
+2026-05-14 18:57:03,049 [INFO] main: [chunk_0039] neighbors=['chunk_0040', 'chunk_0022', 'chunk_0001']
+2026-05-14 18:57:15,507 [INFO] main: [chunk_0039] generated 2 qa in 13.22s
+2026-05-14 18:57:16,254 [INFO] main: [chunk_0040] neighbors=['chunk_0039', 'chunk_0018', 'chunk_0016']
+2026-05-14 18:57:25,972 [INFO] main: [chunk_0040] generated 2 qa in 10.46s
+2026-05-14 18:57:26,857 [INFO] main: [chunk_0041] neighbors=['chunk_0004', 'chunk_0005', 'chunk_0016']
+2026-05-14 18:57:35,918 [INFO] main: [chunk_0041] generated 3 qa in 9.94s
+2026-05-14 18:57:36,757 [INFO] main: [chunk_0042] neighbors=['chunk_0043', 'chunk_0045', 'chunk_0044']
+2026-05-14 18:57:49,121 [INFO] main: [chunk_0042] generated 3 qa in 13.20s
+2026-05-14 18:57:50,264 [INFO] main: [chunk_0043] neighbors=['chunk_0044', 'chunk_0046', 'chunk_0045']
+2026-05-14 18:58:06,291 [INFO] main: [chunk_0043] generated 3 qa in 17.16s
+2026-05-14 18:58:07,268 [INFO] main: [chunk_0044] neighbors=['chunk_0043', 'chunk_0046', 'chunk_0045']
+2026-05-14 18:58:22,059 [INFO] main: [chunk_0044] generated 3 qa in 15.76s
+2026-05-14 18:58:23,178 [INFO] main: [chunk_0045] neighbors=['chunk_0044', 'chunk_0043', 'chunk_0046']
+2026-05-14 18:58:32,348 [INFO] main: [chunk_0045] generated 3 qa in 10.28s
+2026-05-14 18:58:33,465 [INFO] main: [chunk_0046] neighbors=['chunk_0043', 'chunk_0044', 'chunk_0045']
+2026-05-14 18:58:50,459 [INFO] main: [chunk_0046] generated 3 qa in 18.10s
+2026-05-14 18:58:51,377 [INFO] main: [chunk_0047] neighbors=['chunk_0043', 'chunk_0045', 'chunk_0044']
+2026-05-14 18:59:04,662 [INFO] main: [chunk_0047] generated 3 qa in 14.19s
+2026-05-14 18:59:06,028 [INFO] main: [chunk_0048] neighbors=['chunk_0044', 'chunk_0043', 'chunk_0047']
+2026-05-14 18:59:13,509 [INFO] main: [chunk_0048] generated 2 qa in 8.84s
+2026-05-14 18:59:14,843 [INFO] main: [chunk_0049] neighbors=['chunk_0042', 'chunk_0022', 'chunk_0031']
+2026-05-14 18:59:22,024 [INFO] main: [chunk_0049] generated 2 qa in 8.51s
+2026-05-14 18:59:22,025 [INFO] main: === run summary: {'done': 47, 'skipped_empty': 2, 'failed': 0} qa_pairs_total=109 ===
+2026-05-14 18:59:22,850 [INFO] qa_generator.exporter: wrote 109 rows to output\qa_test_full_v2.xlsx
+2026-05-14 18:59:22,852 [INFO] main: xlsx exported: output/qa_test_full_v2.xlsx (109 rows)

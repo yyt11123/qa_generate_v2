@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(pip install *)",
+      "Bash(cd \"c:/Users/HUAWEI/Documents/WorkSpaces/rag/qa_generate_v2\" && mkdir -p qa_generator logs progress failed vector_db output)",
+      "Bash(python -c \"import os; from dotenv import load_dotenv; load_dotenv\\(\\); k = os.getenv\\('DASHSCOPE_API_KEY'\\); print\\('key set:', bool\\(k\\), 'len:', len\\(k\\) if k else 0\\)\")",
+      "Bash(python -X utf8 main.py --input chunks.jsonl --output output/qa_test_dryrun.xlsx --limit 5 --dry-run)",
+      "Bash(python -X utf8 -c ' *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\HUAWEI\\Documents\\WorkSpaces\\rag\\qa_generate_v2"
+    ]
+  }
+}
