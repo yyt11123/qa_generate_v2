@@ -1,7 +1,15 @@
 """把中间 jsonl 聚合成 xlsx。单行表头，不合并单元格，每行都填分类。
 
-注意：xlsx 格式底层不区分"空字符串"和"空 cell"，pandas 默认读会把空 cell 显示为 NaN。
+【输出文件命名规约 (v3 起生效)】
+本模块默认就带样式输出（_apply_styles 已合并到主流程），
+所以不再使用 _styled 后缀。正式定稿文件统一叫 qa_test_full_v<N>.xlsx，
+例如 qa_test_full_v3.xlsx；不要再写 qa_test_full_v3_styled.xlsx 这种重复命名。
+dry-run 输出可以叫 qa_test_v<N>_dryrun.xlsx 区分。
+
+【page 列】
+xlsx 格式底层不区分"空字符串"和"空 cell"，pandas 默认读会把空 cell 显示为 NaN。
 用 Excel UI 打开时显示为空白单元格。如需用 pandas 读出来是 ''，传 keep_default_na=False。
+带页码时本模块强制写成字符串 + number_format='@'，确保 "17-18" 不会被识别成减法。
 """
 import json
 import logging
@@ -49,6 +57,16 @@ COLUMN_WIDTHS = {
 }
 
 
+def _format_page(page_start, page_end) -> str:
+    """page_start == page_end → '15'; 跨页 → '17-18'; 缺失/None → ''.
+    强制返回字符串，避免 Excel 把数字当日期或公式。"""
+    if page_start is None or page_end is None:
+        return ""
+    if page_start == page_end:
+        return str(page_start)
+    return f"{page_start}-{page_end}"
+
+
 def export_to_xlsx(qa_jsonl_path: str | Path, output_xlsx: str | Path) -> int:
     qa_jsonl_path = Path(qa_jsonl_path)
     output_xlsx = Path(output_xlsx)
@@ -80,24 +98,40 @@ def export_to_xlsx(qa_jsonl_path: str | Path, output_xlsx: str | Path) -> int:
                     "answers(预期回答)": qa.get("answer") or "",
                     "supporting facts(支撑信息)": qa.get("supporting_facts") or "",
                     "document(文件名称)": qa.get("source") or "",
-                    "page(所在页码)": "",
+                    "page(所在页码)": _format_page(qa.get("page_start"), qa.get("page_end")),
                     "text/img/table(支撑文本/图片/表格)": qa.get("type") or "",
                     "chunk_id": qa.get("chunk_id") or "",
                 }
             )
 
     df = pd.DataFrame(rows, columns=COLUMNS)
-    df["page(所在页码)"] = ""
     df = df.fillna("")
+    df["page(所在页码)"] = df["page(所在页码)"].astype(str)
     df.to_excel(output_xlsx, index=False, engine="openpyxl")
+    _force_page_text_type(output_xlsx)
     _apply_styles(output_xlsx)
     logger.info("wrote %d rows to %s", len(df), output_xlsx)
     return len(df)
 
 
+def _force_page_text_type(xlsx_path: Path) -> None:
+    """把 page 列每个 cell 的 number_format 设成 '@'（文本格式），
+    确保像 '15' 或 '17-18' 不会被 Excel 解释成数字、日期或公式。"""
+    wb = load_workbook(xlsx_path)
+    ws = wb.active
+    headers = [c.value for c in ws[1]]
+    if "page(所在页码)" not in headers:
+        return
+    page_col_idx = headers.index("page(所在页码)") + 1
+    for row in range(2, ws.max_row + 1):
+        cell = ws.cell(row=row, column=page_col_idx)
+        cell.number_format = "@"
+        if cell.value is not None and not isinstance(cell.value, str):
+            cell.value = str(cell.value)
+    wb.save(xlsx_path)
+
+
 def _apply_styles(xlsx_path: Path) -> None:
-    """写完数据后用 openpyxl 加列宽 / 自动换行 / 表头样式 / 冻结首行。
-    行高不显式设置，保持默认值，让 Excel 在打开时按 wrap_text 自动撑开。"""
     wb = load_workbook(xlsx_path)
     ws = wb.active
     headers = [c.value for c in ws[1]]

@@ -26,7 +26,18 @@ PROGRESS_DIR = ROOT / "progress"
 FAILED_DIR = ROOT / "failed"
 OUTPUT_DIR = ROOT / "output"
 
-CHROMA_COLLECTION = "chunks"
+# ===== v3 当前活跃配置 =====
+INPUT_FILE = "inputs/chunks_v3.jsonl"
+CHROMA_COLLECTION = "chunks_v3"
+INTERMEDIATE_QA_JSONL = "output/chunks_v3.qa.jsonl"
+OUTPUT_XLSX = "output/qa_test_full_v3.xlsx"
+
+# ===== 历史保留（切换 dataset 时把上面几行替换为下面对应的即可）=====
+# v1/v2 (旧 chunks)：
+# INPUT_FILE = "inputs/chunks.jsonl"
+# CHROMA_COLLECTION = "chunks"
+# INTERMEDIATE_QA_JSONL = "output/chunks.qa.jsonl"
+# OUTPUT_XLSX = "output/qa_test_full_v2.xlsx"
 
 # ===== 业务 =====
 CATEGORIES = [

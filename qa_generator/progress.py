@@ -27,13 +27,20 @@ def _atomic_write_json(path: Path, obj: dict) -> None:
 
 
 class ProgressTracker:
-    """每个 chunk 处理完立即 flush。中间产物 jsonl 也由本类管理（追加写）。"""
+    """每个 chunk 处理完立即 flush。中间产物 jsonl 也由本类管理（追加写）。
 
-    def __init__(self, input_basename: str):
+    qa_jsonl_path 优先用调用方传入的显式路径（一般来自 config.INTERMEDIATE_QA_JSONL）；
+    若未传入，则按 input_basename 派生（dry-run / 多文件批处理时常用此分支）。
+    """
+
+    def __init__(self, input_basename: str, qa_jsonl_path: str | Path | None = None):
         self.basename = input_basename
         self.progress_path = PROGRESS_DIR / f"{input_basename}.progress.json"
         self.failed_path = FAILED_DIR / f"{input_basename}.failed.json"
-        self.qa_jsonl_path = OUTPUT_DIR / f"{input_basename}.qa.jsonl"
+        if qa_jsonl_path is not None:
+            self.qa_jsonl_path = Path(qa_jsonl_path)
+        else:
+            self.qa_jsonl_path = OUTPUT_DIR / f"{input_basename}.qa.jsonl"
 
         self.done: set[str] = set()
         self.skipped: set[str] = set()
@@ -83,6 +90,8 @@ class ProgressTracker:
                 row = {
                     "chunk_id": chunk_id,
                     "source": chunk.get("source", ""),
+                    "page_start": chunk.get("page_start"),
+                    "page_end": chunk.get("page_end"),
                     "category": qa.get("category"),
                     "question": qa.get("question"),
                     "answer": qa.get("answer"),
