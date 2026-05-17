@@ -1,8 +1,9 @@
 """单文件 QA 生成入口。
 
 Usage:
-    python main.py --input chunks.jsonl --output output/qa_test.xlsx
-    python main.py --input chunks.jsonl --output output/qa_test_dryrun.xlsx --limit 5 --dry-run
+    python main.py                                       # 默认读 config.INPUT_FILE → config.OUTPUT_XLSX
+    python main.py --limit 5 --dry-run                   # 前 5 个 chunks dry-run
+    python main.py --input inputs/foo.jsonl --output output/foo.xlsx   # 显式覆盖
 """
 from __future__ import annotations
 
@@ -23,8 +24,10 @@ from tqdm import tqdm
 
 from config import (
     FAIL_THRESHOLD,
+    INPUT_FILE,
+    INTERMEDIATE_QA_JSONL,
     LOG_DIR,
-    OUTPUT_DIR,
+    OUTPUT_XLSX,
     TOP_K,
 )
 from qa_generator.chunk_loader import load_chunks
@@ -65,8 +68,8 @@ def setup_logging(input_basename: str) -> Path:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="RAG QA test set generator (single-file mode).")
-    p.add_argument("--input", default="chunks.jsonl", help="path to chunks jsonl")
-    p.add_argument("--output", default=str(OUTPUT_DIR / "qa_test.xlsx"), help="path to output xlsx")
+    p.add_argument("--input", default=INPUT_FILE, help=f"path to chunks jsonl (default {INPUT_FILE})")
+    p.add_argument("--output", default=OUTPUT_XLSX, help=f"path to output xlsx (default {OUTPUT_XLSX})")
     p.add_argument("--limit", type=int, default=0, help="only process first N chunks (0 = all)")
     p.add_argument("--top-k", type=int, default=TOP_K, help=f"neighbor count (default {TOP_K})")
     p.add_argument(
@@ -99,7 +102,10 @@ def run(args: argparse.Namespace) -> int:
     stats = index_chunks(chunks)
     logger.info("indexing done: %s", stats)
 
-    tracker = ProgressTracker(input_basename)
+    tracker = ProgressTracker(
+        input_basename,
+        qa_jsonl_path=None if args.dry_run else INTERMEDIATE_QA_JSONL,
+    )
     if args.dry_run:
         tracker.reset_intermediate()
         tracker.done.clear()
