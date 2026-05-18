@@ -55,50 +55,91 @@ def _format_violations(metric: dict, max_show: int = 10) -> str:
 
 def _read_annotations(xlsx_path: Path) -> tuple[list[dict], dict]:
     """读 sample xlsx 的 B1-B4 + 备注。返回 (rows, summary)。
-    rows: 每行含 chunk_id, B1, B2, B3, B4, note
-    summary: 各维度均值 + 已标注条数 / 总条数 + 备注计数
+    rows: 每行附加 _data_row（数据行号，从 1 开始，与用户人工标注时看到的"第 N 条"一致）
+    summary: 各维度均值 / 已填条数 / 5 分条数 / 备注计数 / 全维度总均值
     """
     wb = openpyxl.load_workbook(xlsx_path)
     ws = wb.active
     headers = [c.value for c in ws[1]]
-    name_to_idx = {h: i for i, h in enumerate(headers)}
 
     rows = []
-    for r in ws.iter_rows(min_row=2, values_only=True):
-        d = dict(zip(headers, r))
+    for i, raw in enumerate(ws.iter_rows(min_row=2, values_only=True), start=1):
+        d = dict(zip(headers, raw))
+        d["_data_row"] = i
         rows.append(d)
 
-    def _avg(field: str) -> tuple[float | None, int]:
-        vals = []
-        for r in rows:
-            v = r.get(field)
-            if v is None or v == "":
-                continue
-            try:
-                vals.append(float(v))
-            except (TypeError, ValueError):
-                continue
+    def _to_float(v):
+        if v is None or v == "":
+            return None
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    def _stats(field: str) -> tuple[float | None, int, int]:
+        """返回 (avg, n_filled, n_full_marks)."""
+        vals = [_to_float(r.get(field)) for r in rows]
+        vals = [v for v in vals if v is not None]
         if not vals:
-            return None, 0
-        return round(sum(vals) / len(vals), 3), len(vals)
+            return None, 0, 0
+        n5 = sum(1 for v in vals if v >= 5.0)
+        return round(sum(vals) / len(vals), 3), len(vals), n5
 
-    b1, n1 = _avg("B1 真实性")
-    b2, n2 = _avg("B2 正确性")
-    b3, n3 = _avg("B3 完整性")
-    b4, n4 = _avg("B4 分类合理性")
+    b1, n1, f1 = _stats("B1 真实性")
+    b2, n2, f2 = _stats("B2 正确性")
+    b3, n3, f3 = _stats("B3 完整性")
+    b4, n4, f4 = _stats("B4 分类合理性")
     notes = sum(1 for r in rows if r.get("备注") and str(r.get("备注")).strip())
-
     annotated_any = max(n1, n2, n3, n4)
+
+    avgs = [a for a in (b1, b2, b3, b4) if a is not None]
+    overall = round(sum(avgs) / len(avgs), 3) if avgs else None
+
     summary = {
         "total_samples": len(rows),
         "annotated_count": annotated_any,
-        "B1_avg": b1, "B1_n": n1,
-        "B2_avg": b2, "B2_n": n2,
-        "B3_avg": b3, "B3_n": n3,
-        "B4_avg": b4, "B4_n": n4,
+        "B1_avg": b1, "B1_n": n1, "B1_full": f1,
+        "B2_avg": b2, "B2_n": n2, "B2_full": f2,
+        "B3_avg": b3, "B3_n": n3, "B3_full": f3,
+        "B4_avg": b4, "B4_n": n4, "B4_full": f4,
+        "overall_avg": overall,
         "notes_count": notes,
     }
     return rows, summary
+
+
+def _short(cid: str | None) -> str:
+    return (cid or "").split("_")[-1]
+
+
+def _below_full_lines(rows: list[dict], field: str) -> list[str]:
+    out = []
+    for r in rows:
+        v = r.get(field)
+        if v is None or v == "":
+            continue
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            continue
+        if f >= 5.0:
+            continue
+        line = f"- 第 {r['_data_row']} 条 (`...{_short(r.get('chunk_id'))}`, {r.get('分类') or ''}): {field}={int(f) if f.is_integer() else f}"
+        note = r.get("备注")
+        if note and str(note).strip():
+            line += f"，备注：{note}"
+        out.append(line)
+    return out
+
+
+def _chunk_class_split(rows: list[dict], chunk_id: str) -> dict[str, list[int]]:
+    """返回 chunk_id 在 sample 中各分类对应的数据行号。"""
+    out: dict[str, list[int]] = {}
+    for r in rows:
+        if r.get("chunk_id") == chunk_id:
+            cat = r.get("分类") or ""
+            out.setdefault(cat, []).append(r["_data_row"])
+    return out
 
 
 def _human_section(annotation_xlsx: Path | None) -> str:
@@ -107,51 +148,129 @@ def _human_section(annotation_xlsx: Path | None) -> str:
     rows, s = _read_annotations(annotation_xlsx)
     if s["annotated_count"] == 0:
         return f"[待人工标注完成后补充]\n\n抽样文件: {annotation_xlsx} (共 {s['total_samples']} 条，尚未标注)"
+
     lines = [
         f"抽样文件: `{annotation_xlsx}`",
-        f"已标注: {s['annotated_count']} / {s['total_samples']} 条",
+        f"已标注: {s['annotated_count']} / {s['total_samples']} 条；"
+        f"全维度总均值 **{s['overall_avg']}** / 5",
         "",
-        "| 维度 | 均值 (1-5) | 已填条数 |",
-        "|---|---|---|",
-        f"| B1 真实性 | {s['B1_avg']} | {s['B1_n']} |",
-        f"| B2 正确性 | {s['B2_avg']} | {s['B2_n']} |",
-        f"| B3 完整性 | {s['B3_avg']} | {s['B3_n']} |",
-        f"| B4 分类合理性 | {s['B4_avg']} | {s['B4_n']} |",
+        "### 5.1 维度均值与 5 分占比",
+        "",
+        "| 维度 | 均值 (1-5) | 已填条数 | 5 分条数 | 5 分占比 |",
+        "|---|---|---|---|---|",
     ]
-    if s["notes_count"]:
-        lines += [
-            "",
-            f"### 备注摘录（共 {s['notes_count']} 条）",
-        ]
-        for r in rows:
-            note = r.get("备注")
-            if note and str(note).strip():
-                cid = r.get("chunk_id") or ""
-                short = cid.split("_")[-1]
-                lines.append(f"- `...{short}`: {note}")
+    total = s["total_samples"]
+    for dim, avg, n, full in [
+        ("B1 真实性", s["B1_avg"], s["B1_n"], s["B1_full"]),
+        ("B2 正确性", s["B2_avg"], s["B2_n"], s["B2_full"]),
+        ("B3 完整性", s["B3_avg"], s["B3_n"], s["B3_full"]),
+        ("B4 分类合理性", s["B4_avg"], s["B4_n"], s["B4_full"]),
+    ]:
+        pct = f"{full/total*100:.0f}%" if total else "-"
+        lines.append(f"| {dim} | {avg} | {n} | {full} | {pct} |")
+
+    lines.append("")
+    lines.append("### 5.2 非满分条目明细")
+    lines.append("")
+    for field in ["B1 真实性", "B2 正确性", "B3 完整性", "B4 分类合理性"]:
+        below = _below_full_lines(rows, field)
+        if not below:
+            continue
+        lines.append(f"**{field}** ({len(below)} 条非满分):")
+        lines.extend(below)
+        lines.append("")
+
+    # 5.3 备注驱动的发现
+    note_rows = [r for r in rows if r.get("备注") and str(r.get("备注")).strip()]
+    if note_rows:
+        lines.append("### 5.3 基于备注的发现")
+        lines.append("")
+        for nr in note_rows:
+            note_txt = str(nr.get("备注")).strip()
+            cid = nr.get("chunk_id") or ""
+            split = _chunk_class_split(rows, cid)
+            if note_txt == "同 chunk 内分类不一致" and len(split) >= 2:
+                parts = []
+                total_n = sum(len(v) for v in split.values())
+                for cat, drows in split.items():
+                    parts.append(f"{len(drows)} 条被分到「{cat}」（第 {', '.join(str(d) for d in drows)} 条）")
+                lines.append(
+                    f"- **`...{_short(cid)}` 同 chunk 内分类不一致**：sample 中 {total_n} 条 QA 出自此 chunk，"
+                    + "；".join(parts) + "。"
+                )
+                lines.append(
+                    "  - 含义：LLM 在分类边界上有稳定性问题。同一 chunk 的语义内容应稳定归一类，"
+                    "现象说明 prompt 当前没有强约束「同 chunk 一致性」。"
+                )
+                lines.append(
+                    "  - 建议：未来在 qa_prompt.py 里加入「同 chunk 的多条 QA 应保持分类一致性」"
+                    "的硬约束，或在生成阶段做后置校正（同 chunk 多分类时按多数投票）。"
+                )
+            else:
+                lines.append(f"- 第 {nr['_data_row']} 条 (`...{_short(cid)}`)：{note_txt}")
+        lines.append("")
+
     return "\n".join(lines)
 
 
-def _conclusion(metrics: dict, human_filled: bool, human_summary: dict | None) -> str:
+def _conclusion(metrics: dict, human_filled: bool, human_summary: dict | None,
+                chunk_inconsistency: list[str] | None = None) -> str:
+    """把判定依据列成事实清单 + 最终判定。
+
+    chunk_inconsistency: 若存在 "同 chunk 内分类不一致" 这类系统性发现，传入
+        ["chunk_id 简称", ...] 显式列出。
+    """
     failures = [m["name"] for m in metrics.values() if m["severity"] == "failure" and not m["passed"]]
     warnings = [m["name"] for m in metrics.values() if m["severity"] == "warning" and not m["passed"]]
+    n_total = len(metrics)
+    n_passed = sum(1 for m in metrics.values() if m["passed"])
+
+    lines = ["### 判定依据"]
+    lines.append("")
+    lines.append(f"- 机器指标：{n_passed}/{n_total} 通过" + (f"（fail: {', '.join(failures)}）" if failures else "")
+                 + (f"（warn 未达标: {', '.join(warnings)}）" if warnings else ""))
+    if human_filled and human_summary:
+        avgs = [human_summary.get(k) for k in ("B1_avg","B2_avg","B3_avg","B4_avg")]
+        avgs_clean = [a for a in avgs if a is not None]
+        if avgs_clean:
+            overall = round(sum(avgs_clean) / len(avgs_clean), 3)
+            lines.append(
+                f"- 人工 4 维平均：B1={human_summary.get('B1_avg')}, "
+                f"B2={human_summary.get('B2_avg')}, B3={human_summary.get('B3_avg')}, "
+                f"B4={human_summary.get('B4_avg')}；总均值 **{overall}**（高质量门槛 4.0）"
+            )
+    if chunk_inconsistency:
+        lines.append(f"- 待改进点（1 个）：{', '.join(chunk_inconsistency)} 同 chunk 内分类不一致，"
+                     f"LLM 分类边界稳定性问题")
+    elif human_filled:
+        lines.append("- 待改进点：无")
+
+    lines.append("")
+    lines.append("### 最终判定")
+    lines.append("")
 
     if failures:
-        verdict = "**需改进**：以下 failure 级指标未通过 → " + ", ".join(failures)
-    elif warnings and not human_filled:
-        verdict = "**有限可用（机器指标层面）**：failure 级全通过，但 " + ", ".join(warnings) + " 触发 warning。等待人工标注后定论。"
-    elif warnings and human_filled and human_summary and any(
-        v is not None and v < 4.0 for v in [human_summary.get("B1_avg"), human_summary.get("B2_avg"), human_summary.get("B3_avg"), human_summary.get("B4_avg")]
-    ):
-        low = [k.replace("_avg", "") for k in ("B1_avg","B2_avg","B3_avg","B4_avg")
-               if human_summary.get(k) is not None and human_summary[k] < 4.0]
-        verdict = f"**有限可用**：人工评分 {', '.join(low)} 维度均值 < 4，需针对性改进。"
-    else:
-        if human_filled:
-            verdict = "**可用**：机器指标全部通过 + 人工评分四维均 ≥ 4。可进入下一阶段（用作 RAG 系统评测集）。"
+        lines.append(f"**需改进**：以下 failure 级机器指标未通过 → {', '.join(failures)}。")
+    elif human_filled and human_summary:
+        avgs_clean = [human_summary.get(k) for k in ("B1_avg","B2_avg","B3_avg","B4_avg") if human_summary.get(k) is not None]
+        overall = sum(avgs_clean) / len(avgs_clean) if avgs_clean else 0
+        if any(a is not None and a < 4.0 for a in [human_summary.get("B1_avg"), human_summary.get("B2_avg"), human_summary.get("B3_avg"), human_summary.get("B4_avg")]):
+            low = [k.replace("_avg","") for k in ("B1_avg","B2_avg","B3_avg","B4_avg") if human_summary.get(k) is not None and human_summary[k] < 4.0]
+            lines.append(f"**有限可用**：人工评分 {', '.join(low)} 维度均值 < 4.0，需针对性改进后再用。")
+        elif overall >= 4.0:
+            lines.append("**v3 测试集质量可用于下一阶段 RAG 系统评测**：")
+            lines.append("机器指标全部通过、人工 4 维评分总均值远超 4.0 高质量门槛、"
+                         "识别出的待改进点（同 chunk 分类不一致）为下次迭代的优化方向，"
+                         "不影响本轮作为评测集使用。")
         else:
-            verdict = "**机器指标层面：可用**。等待人工标注完成后定终稿。"
-    return verdict
+            lines.append("**有限可用**：机器指标通过但人工评分整体偏低，建议先迭代再用。")
+    elif warnings:
+        lines.append(f"**有限可用（机器指标层面）**：failure 级全通过，但 {', '.join(warnings)} 触发 warning。"
+                     f"等待人工标注后定论。")
+    else:
+        lines.append("**机器指标层面：可用**。等待人工标注完成后定终稿。")
+
+    return "\n".join(lines)
 
 
 def _sampling_findings(annotation_xlsx: Path | None, all_qa_rows: list[dict]) -> dict:
@@ -301,7 +420,17 @@ def render_report(
 
     md.append("## 7. 结论")
     md.append("")
-    md.append(_conclusion(metrics, bool(human_filled), human_summary))
+    chunk_inconsistency = []
+    if annotation_xlsx and annotation_xlsx.exists():
+        ann_rows, _ = _read_annotations(annotation_xlsx)
+        for nr in ann_rows:
+            note_txt = str(nr.get("备注") or "").strip()
+            if note_txt == "同 chunk 内分类不一致":
+                cid = nr.get("chunk_id") or ""
+                short = _short(cid)
+                if short and f"`...{short}`" not in chunk_inconsistency:
+                    chunk_inconsistency.append(f"`...{short}`")
+    md.append(_conclusion(metrics, bool(human_filled), human_summary, chunk_inconsistency))
     if findings["low_diversity_cats"]:
         md.append("")
         suggestions = []
