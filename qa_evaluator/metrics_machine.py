@@ -1,7 +1,11 @@
 """9 个机器指标。所有指标无 API 调用，纯本地计算。
-
+9 个指标分别是：答案字符在支撑信息里的占比 ≥ 50%，支撑信息真的来自原 chunk ≥ 95%，
+不能混入简体字（繁体业务），不能出现"本节/上述"等元问题 ≤ 5%，答案开头不能用模糊指代 ≤ 10%，
+8 大业务分类至少覆盖 5 类，最大类占比 ≤ 40%，防一边倒，至少 85% 的 chunk 被出过题，
+同 chunk 内重复率 ≤ 5%
 阈值常量集中在 THRESHOLDS 中；用户审阅后可调整。
 """
+
 from __future__ import annotations
 
 import json
@@ -15,22 +19,22 @@ logger = logging.getLogger(__name__)
 
 # ===== 阈值（聚合层，决定 metric.passed）=====
 THRESHOLDS: dict[str, dict[str, Any]] = {
-    "answer_groundedness":    {"op": ">=", "value": 0.50, "severity": "warning"},
-    "sf_in_chunk_rate":       {"op": ">=", "value": 0.95, "severity": "failure"},
+    "answer_groundedness": {"op": ">=", "value": 0.50, "severity": "warning"},
+    "sf_in_chunk_rate": {"op": ">=", "value": 0.95, "severity": "failure"},
     "simplified_pollution_rate": {"op": "<=", "value": 0.0, "severity": "failure"},
-    "meta_question_rate":     {"op": "<=", "value": 0.05, "severity": "failure"},
-    "vague_reference_rate":   {"op": "<=", "value": 0.10, "severity": "warning"},
-    "category_coverage":      {"op": ">=", "value": 0.625, "severity": "warning"},  # ≥5/8
-    "category_balance":       {"op": "<=", "value": 0.40, "severity": "warning"},
-    "chunk_coverage":         {"op": ">=", "value": 0.85, "severity": "failure"},
-    "duplicate_qa_rate":      {"op": "<=", "value": 0.05, "severity": "warning"},
+    "meta_question_rate": {"op": "<=", "value": 0.05, "severity": "failure"},
+    "vague_reference_rate": {"op": "<=", "value": 0.10, "severity": "warning"},
+    "category_coverage": {"op": ">=", "value": 0.625, "severity": "warning"},  # ≥5/8
+    "category_balance": {"op": "<=", "value": 0.40, "severity": "warning"},
+    "chunk_coverage": {"op": ">=", "value": 0.85, "severity": "failure"},
+    "duplicate_qa_rate": {"op": "<=", "value": 0.05, "severity": "warning"},
 }
 
 # ===== 单条 QA 违规阈值（决定违规明细中 included / not）=====
 PER_ITEM = {
-    "answer_groundedness":    0.50,   # < 此值 → 列入明细
-    "sf_in_chunk_rate":       0.80,   # 即用户给的 ≥0.8 视为来自 chunk
-    "duplicate_qa_pair":      0.70,   # 同 chunk 内 question 相似度 > 此值 → 重复
+    "answer_groundedness": 0.50,  # < 此值 → 列入明细
+    "sf_in_chunk_rate": 0.80,  # 即用户给的 ≥0.8 视为来自 chunk
+    "duplicate_qa_pair": 0.70,  # 同 chunk 内 question 相似度 > 此值 → 重复
 }
 
 # ===== 关键词 / 字符集 =====
@@ -70,7 +74,12 @@ def metric_answer_groundedness(rows: list[dict]) -> dict:
     violations = []
     for r in rows:
         a = (r.get("answer") or "").replace(" ", "").replace("\n", "").replace("\t", "")
-        sf = (r.get("supporting_facts") or "").replace(" ", "").replace("\n", "").replace("\t", "")
+        sf = (
+            (r.get("supporting_facts") or "")
+            .replace(" ", "")
+            .replace("\n", "")
+            .replace("\t", "")
+        )
         if not a:
             ratio = 0.0
         else:
@@ -78,11 +87,13 @@ def metric_answer_groundedness(rows: list[dict]) -> dict:
             ratio = sum(1 for c in a if c in sf_chars) / len(a)
         per_qa_ratios.append(ratio)
         if ratio < PER_ITEM["answer_groundedness"]:
-            violations.append({
-                "chunk_id": r.get("chunk_id"),
-                "question": (r.get("question") or "")[:80],
-                "ratio": round(ratio, 3),
-            })
+            violations.append(
+                {
+                    "chunk_id": r.get("chunk_id"),
+                    "question": (r.get("question") or "")[:80],
+                    "ratio": round(ratio, 3),
+                }
+            )
     avg = sum(per_qa_ratios) / len(per_qa_ratios) if per_qa_ratios else 0.0
     return _wrap("answer_groundedness", avg, violations)
 
@@ -112,11 +123,13 @@ def metric_sf_in_chunk_rate(rows: list[dict], chunks_by_id: dict[str, dict]) -> 
         if sim >= PER_ITEM["sf_in_chunk_rate"]:
             in_count += 1
         else:
-            violations.append({
-                "chunk_id": cid,
-                "question": (r.get("question") or "")[:80],
-                "similarity": round(sim, 3),
-            })
+            violations.append(
+                {
+                    "chunk_id": cid,
+                    "question": (r.get("question") or "")[:80],
+                    "similarity": round(sim, 3),
+                }
+            )
     rate = in_count / len(rows) if rows else 0.0
     return _wrap("sf_in_chunk_rate", rate, violations)
 
@@ -128,11 +141,13 @@ def metric_simplified_pollution_rate(rows: list[dict]) -> dict:
         text = (r.get("question") or "") + (r.get("answer") or "")
         hits = sorted(set(c for c in text if c in SIMPLIFIED_CHARSET))
         if hits:
-            polluted.append({
-                "chunk_id": r.get("chunk_id"),
-                "question": (r.get("question") or "")[:80],
-                "simplified_chars": hits,
-            })
+            polluted.append(
+                {
+                    "chunk_id": r.get("chunk_id"),
+                    "question": (r.get("question") or "")[:80],
+                    "simplified_chars": hits,
+                }
+            )
     rate = len(polluted) / len(rows) if rows else 0.0
     return _wrap("simplified_pollution_rate", rate, polluted)
 
@@ -144,11 +159,13 @@ def metric_meta_question_rate(rows: list[dict]) -> dict:
         q = r.get("question") or ""
         hits = [k for k in META_KEYWORDS if k in q]
         if hits:
-            flagged.append({
-                "chunk_id": r.get("chunk_id"),
-                "question": q[:120],
-                "hit_keywords": hits,
-            })
+            flagged.append(
+                {
+                    "chunk_id": r.get("chunk_id"),
+                    "question": q[:120],
+                    "hit_keywords": hits,
+                }
+            )
     rate = len(flagged) / len(rows) if rows else 0.0
     return _wrap("meta_question_rate", rate, flagged)
 
@@ -160,11 +177,13 @@ def metric_vague_reference_rate(rows: list[dict]) -> dict:
         a = (r.get("answer") or "")[:20]
         hits = [k for k in VAGUE_REFERENCES if k in a]
         if hits:
-            flagged.append({
-                "chunk_id": r.get("chunk_id"),
-                "answer_head": a,
-                "hit_keywords": hits,
-            })
+            flagged.append(
+                {
+                    "chunk_id": r.get("chunk_id"),
+                    "answer_head": a,
+                    "hit_keywords": hits,
+                }
+            )
     rate = len(flagged) / len(rows) if rows else 0.0
     return _wrap("vague_reference_rate", rate, flagged)
 
@@ -178,7 +197,16 @@ def metric_category_coverage(rows: list[dict], total_categories: int = 8) -> dic
     cats.discard("")
     coverage = len(cats) / total_categories
     violations = []
-    all_simp = ["案例", "产品", "投保规则", "健康核保", "财务核保", "缴费", "行政规则", "一般查询"]
+    all_simp = [
+        "案例",
+        "产品",
+        "投保规则",
+        "健康核保",
+        "财务核保",
+        "缴费",
+        "行政规则",
+        "一般查询",
+    ]
     missing = [c for c in all_simp if c not in cats]
     if missing:
         violations.append({"missing_categories": missing})
@@ -194,7 +222,9 @@ def metric_category_balance(rows: list[dict]) -> dict:
     ratio = most_n / sum(counter.values())
     violations = []
     if not _passes(ratio, "<=", THRESHOLDS["category_balance"]["value"]):
-        violations.append({"dominant_category": most_cat, "count": most_n, "ratio": round(ratio, 3)})
+        violations.append(
+            {"dominant_category": most_cat, "count": most_n, "ratio": round(ratio, 3)}
+        )
     return _wrap("category_balance", ratio, violations)
 
 
@@ -222,12 +252,14 @@ def metric_duplicate_qa_rate(rows: list[dict]) -> dict:
                 sim = SequenceMatcher(None, q1, q2, autojunk=False).ratio()
                 if sim > PER_ITEM["duplicate_qa_pair"]:
                     dup_pairs += 1
-                    violations.append({
-                        "chunk_id": cid,
-                        "q1": q1[:80],
-                        "q2": q2[:80],
-                        "similarity": round(sim, 3),
-                    })
+                    violations.append(
+                        {
+                            "chunk_id": cid,
+                            "q1": q1[:80],
+                            "q2": q2[:80],
+                            "similarity": round(sim, 3),
+                        }
+                    )
     rate = dup_pairs * 2 / len(rows) if rows else 0.0
     return _wrap("duplicate_qa_rate", rate, violations)
 
@@ -238,14 +270,14 @@ def metric_duplicate_qa_rate(rows: list[dict]) -> dict:
 def run_all(rows: list[dict], chunks_by_id: dict[str, dict], total_chunks: int) -> dict:
     """跑 9 个指标，返回 dict 结构 {metric_name: metric_dict}."""
     results = {
-        "answer_groundedness":      metric_answer_groundedness(rows),
-        "sf_in_chunk_rate":         metric_sf_in_chunk_rate(rows, chunks_by_id),
+        "answer_groundedness": metric_answer_groundedness(rows),
+        "sf_in_chunk_rate": metric_sf_in_chunk_rate(rows, chunks_by_id),
         "simplified_pollution_rate": metric_simplified_pollution_rate(rows),
-        "meta_question_rate":       metric_meta_question_rate(rows),
-        "vague_reference_rate":     metric_vague_reference_rate(rows),
-        "category_coverage":        metric_category_coverage(rows),
-        "category_balance":         metric_category_balance(rows),
-        "chunk_coverage":           metric_chunk_coverage(rows, total_chunks),
-        "duplicate_qa_rate":        metric_duplicate_qa_rate(rows),
+        "meta_question_rate": metric_meta_question_rate(rows),
+        "vague_reference_rate": metric_vague_reference_rate(rows),
+        "category_coverage": metric_category_coverage(rows),
+        "category_balance": metric_category_balance(rows),
+        "chunk_coverage": metric_chunk_coverage(rows, total_chunks),
+        "duplicate_qa_rate": metric_duplicate_qa_rate(rows),
     }
     return results
