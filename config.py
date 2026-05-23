@@ -49,3 +49,12 @@ TYPE_VALUES = ["text", "img", "table"]
 # ===== 健壮性 =====
 FAIL_THRESHOLD = 5
 SUPPORTING_FACTS_OVERLAP_MIN = 0.5
+
+# ===== 批量模式（10 文件）=====
+BATCH_INPUT_DIR = "inputs/batch"
+BATCH_OUTPUT_DIR = "output/per_file"
+BATCH_AGGREGATED_XLSX = "output/qa_test_all.xlsx"
+BATCH_MANIFEST = "progress/_batch.manifest.json"
+BATCH_FAILED_LOG = "failed/_batch.failed.json"
+BATCH_FAIL_FILE_THRESHOLD = 3      # 累计失败文件 ≥ 3 暂停
+CHROMA_COLLECTION_BATCH = "chunks_batch"
