@@ -6,7 +6,7 @@ import random
 import time
 from functools import lru_cache
 
-from openai import OpenAI, APIError, APITimeoutError, RateLimitError
+from openai import OpenAI, APIError, APITimeoutError, PermissionDeniedError, RateLimitError
 
 from config import (
     DASHSCOPE_BASE_URL,
@@ -30,6 +30,19 @@ def get_client() -> OpenAI:
 
 
 _RETRYABLE = (APITimeoutError, RateLimitError, APIError, ConnectionError)
+
+
+# 模块级 token 累加器：仅用于 chat_json 成功调用，不追踪 embedding。
+# batch_runner 每个文件开始前 reset，结束后读 → 写入 manifest stats。
+_token_stats = {"prompt_tokens": 0, "completion_tokens": 0, "n_calls": 0}
+
+
+def get_token_stats() -> dict:
+    return dict(_token_stats)
+
+
+def reset_token_stats() -> None:
+    _token_stats.update(prompt_tokens=0, completion_tokens=0, n_calls=0)
 
 
 def _sleep_backoff(attempt: int) -> None:
@@ -59,7 +72,16 @@ def chat_json(messages: list[dict], model: str = LLM_MODEL, extra_user_hint: str
             content = resp.choices[0].message.content
             if not content:
                 raise ValueError("LLM returned empty content")
-            return json.loads(content)
+            parsed = json.loads(content)
+            usage = getattr(resp, "usage", None)
+            if usage is not None:
+                _token_stats["prompt_tokens"] += getattr(usage, "prompt_tokens", 0) or 0
+                _token_stats["completion_tokens"] += getattr(usage, "completion_tokens", 0) or 0
+            _token_stats["n_calls"] += 1
+            return parsed
+        except PermissionDeniedError:
+            # 403 = 配额/权限问题，重试无意义且会浪费每次 retry 的预算余量
+            raise
         except json.JSONDecodeError as e:
             last_err = e
             logger.warning("LLM returned non-JSON (attempt %d/%d): %s", attempt + 1, LLM_RETRY_MAX, e)
